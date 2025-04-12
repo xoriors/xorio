@@ -551,6 +551,20 @@ h2{
     height: auto;
 }
 
+/* --grow-section */
+
+#grow {
+    color: white;
+    padding: 50px 20px;
+}
+
+#grow h1 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 30px;
+    color: #4caf50;
+}
+
 .a{
     color: white;
     text-decoration: none;
