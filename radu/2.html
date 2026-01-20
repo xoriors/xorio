@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-black text-white overflow-x-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radu Marias | Systems Engineer</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    
+    <!-- Dependencies (Allowed via CDN for "Flex" capabilities) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                        display: ['"Space Grotesk"', 'sans-serif']
+                    },
+                    colors: {
+                        rust: '#DEA584',
+                        neon: '#00ff41'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; cursor: none; } /* Custom cursor */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #050505;
+        }
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 4px;
+            height: 4px;
+            background-color: #DEA584;
+            box-shadow: 0 0 10px #DEA584;
+        }
+        .cursor-outline {
+            display: none;
+        }
+        
+        /* Terminal Blinking Cursor */
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: -1px 0 #00fff9;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(13px, 9999px, 81px, 0); }
+            20% { clip: rect(74px, 9999px, 14px, 0); }
+            40% { clip: rect(41px, 9999px, 50px, 0); }
+            60% { clip: rect(10px, 9999px, 86px, 0); }
+            80% { clip: rect(32px, 9999px, 95px, 0); }
+            100% { clip: rect(58px, 9999px, 21px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(2px, 9999px, 1px, 0); }
+            20% { clip: rect(56px, 9999px, 23px, 0); }
+            40% { clip: rect(34px, 9999px, 7px, 0); }
+            60% { clip: rect(89px, 9999px, 22px, 0); }
+            80% { clip: rect(12px, 9999px, 66px, 0); }
+            100% { clip: rect(67px, 9999px, 11px, 0); }
+        }
+        
+        .section-hidden {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+    </style>
+</head>
+<body class="font-mono">
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Background Canvas -->
+    <canvas id="canvas-bg"></canvas>
+
+    <!-- Console State Indicator -->
+    <div id="console-state" class="fixed bottom-4 right-4 z-40 px-4 py-2 text-xs font-mono bg-zinc-900/80 border border-zinc-800 rounded text-zinc-500 pointer-events-none">
+        <span id="state-indicator" class="text-zinc-600">console: </span><span id="state-value" class="text-zinc-400">closed</span>
+    </div>
+
+    <!-- Preloader Overlay -->
+    <div id="intro-layer" class="fixed inset-0 bg-black z-50 flex items-center justify-center">
+        <div class="text-center">
+            <pre id="ascii-art" class="text-[0.4rem] md:text-[0.5rem] lg:text-[0.6rem] xl:text-[0.7rem] leading-none text-rust font-bold opacity-0 scale-90 whitespace-pre font-mono mx-auto text-center">
+╔═══════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                           ║
+║   ██████╗  █████╗ ██████╗ ██╗   ██╗    ███╗   ███╗ █████╗ ██████╗ ██╗  █████╗  ███████╗   ║
+║   ██╔══██╗██╔══██╗██╔══██╗██║   ██║    ████╗ ████║██╔══██╗██╔══██╗██║ ██╔══██╗ ██╔════╝   ║
+║   ██████╔╝███████║██║  ██║██║   ██║    ██╔████╔██║███████║██████╔╝██║ ███████║ ███████╗   ║
+║   ██╔══██╗██╔══██║██║  ██║██║   ██║    ██║╚██╔╝██║██╔══██║██╔══██╗██║ ██╔══██║ ╚════██║   ║
+║   ██║  ██║██║  ██║██████╔╝╚██████╔╝    ██║ ╚═╝ ██║██║  ██║██║  ██║██║ ██║  ██║ ███████╗   ║
+║   ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝     ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═╝  ╚═╝ ╚══════╝   ║
+║                                                                                           ║
+║                       SYSTEMS ENGINEER | RUST SPECIALIST | GITHUB                         ║
+║                                                                                           ║
+║          ░░▒▒▓▓███████████████████████████████████████████████████████████▓▓▒▒░░          ║
+║                                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════╝
+            </pre>
+            <div id="loading-terminal" class="mt-12 text-left text-[0.4rem] md:text-[0.5rem] text-zinc-400 font-mono space-y-0.5 max-w-lg mx-auto" style="min-height: 120px; font-family: 'JetBrains Mono', monospace;">
+                <p><span class="text-neon">$</span> cargo build --release --bin radu</p>
+                <p id="compile-1" class="text-zinc-500" style="opacity: 0;">  <span class="text-yellow-500">Compiling</span> radu v1.0.0</p>
+                <p id="compile-2" class="text-zinc-500" style="opacity: 0;">  <span class="text-yellow-500">Compiling</span> networking-stack v0.9.8</p>
+                <p id="compile-3" class="text-zinc-500" style="opacity: 0;">  <span class="text-yellow-500">Compiling</span> cryptography v2.1.0</p>
+                <p id="compile-4" class="text-zinc-500" style="opacity: 0;">  <span class="text-yellow-500">Compiling</span> distributed-systems v1.5.0</p>
+                <p id="compile-5" class="text-zinc-500" style="opacity: 0;">  <span class="text-yellow-500">Linking</span> target/release/radu</p>
+                <p id="compile-6" class="text-green-400" style="opacity: 0;">  <span class="text-green-400">Finished</span> release [optimized] target(s) in 2.42s</p>
+                <p id="compile-7" class="text-rust" style="opacity: 0;"><span class="text-neon">➜</span> Portfolio loaded successfully</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 min-h-screen">
+        
+        <!-- Hero Section -->
+        <section class="min-h-screen flex items-center justify-center p-8 relative">
+            <div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-2 text-rust text-sm font-bold tracking-widest uppercase">
+                        <span class="w-3 h-3 bg-rust rounded-full blink"></span>
+                        System Online
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-display font-bold leading-tight glitch" data-text="RADU MARIAS">
+                        RADU MARIAS
+                    </h1>
+                    <p class="text-xl md:text-2xl text-zinc-400">
+                        Senior Software Developer | Rust Specialist | Expert in Networking, APIs, Cryptography and Distributed Systems
+                    </p>
+                    <div class="pt-8 flex gap-4">
+                        <a href="#projects" class="px-8 py-3 bg-white text-black font-bold hover:bg-rust hover:text-white transition-colors">
+                            VIEW_PROJECTS
+                        </a>
+                        <a href="#about" class="px-8 py-3 border border-zinc-700 text-white hover:border-rust hover:text-rust transition-colors">
+                            READ_BIO
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3D Card / Visual -->
+                <div class="hidden lg:block relative ">
+                    <div id="hero-card" class="w-full aspect-square bg-zinc-900/50 backdrop-blur border border-zinc-800 p-8 transform rotate-y-12 rotate-x-6 hover:rotate-0 transition-transform duration-700 ease-out preserve-3d">
+                        <div class="absolute inset-0 bg-gradient-to-br from-rust/10 to-transparent pointer-events-none"></div>
+                        <div class="font-mono text-xs text-zinc-600 mb-4 opacity-50">
+                            // src/main.rs
+                        </div>
+                        <pre class="text-sm text-zinc-300 overflow-hidden">
+<span class="text-purple-400">fn</span> <span class="text-blue-400">main</span>() {
+    <span class="text-purple-400">let</span> engineer = <span class="text-yellow-300">Engineer</span> {
+        name: <span class="text-green-400">"Radu"</span>,
+        specialty: <span class="text-green-400">"Systems"</span>,
+        stack: <span class="text-purple-400">vec!</span>[
+            <span class="text-green-400">"Rust"</span>, 
+            <span class="text-green-400">"Distributed Systems"</span>,
+            <span class="text-green-400">"Cryptography"</span>
+        ],
+    };
+
+    engineer.<span class="text-blue-400">build_future</span>();
+}</pre>
+                        <div class="mt-12 space-y-2">
+                             <div class="h-2 w-3/4 bg-zinc-800 rounded animate-pulse"></div>
+                             <div class="h-2 w-1/2 bg-zinc-800 rounded animate-pulse delay-75"></div>
+                             <div class="h-2 w-5/6 bg-zinc-800 rounded animate-pulse delay-150"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-zinc-500 animate-bounce">
+                ↓ SCROLL_TO_INIT
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-32 bg-zinc-950/50">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="section-hidden">
+                    <h2 class="text-rust font-mono text-sm mb-4">/// WHOAMI</h2>
+                    <p class="text-2xl md:text-3xl text-zinc-300 leading-relaxed mb-8">
+                        I am a Rust Developer with extensive experience in <span class="text-white">concurrency, file systems, networking, distributed systems, containers, APIs, and cryptography.</span>
+                    </p>
+                    <p class="text-xl text-zinc-400 leading-relaxed mb-6">
+                        I also have a strong background in Java, focusing on network protocols such as QUIC, TCP/IP, UDP, SSH, and FTP, and I’m proficient in SQL databases, including PostgreSQL and MySQL.
+                    </p>
+                    <p class="text-zinc-500 text-lg mb-12">
+                        One of the most active GitHub users in Romania and among the first in Rust.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="p-6 border border-zinc-900 bg-zinc-900/20">
+                            <h4 class="text-white font-bold mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-rust rotate-45"></span>
+                                Core Expertise
+                            </h4>
+                            <p class="text-zinc-500 text-sm">
+                                Collaborated on projects involving cryptography, digital identity, encoders, APIs, scaling, 3D rendering, WASM, egui.
+                            </p>
+                        </div>
+                        <div class="p-6 border border-zinc-900 bg-zinc-900/20">
+                            <h4 class="text-white font-bold mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-rust rotate-45"></span>
+                                Blockchain
+                            </h4>
+                            <p class="text-zinc-500 text-sm">
+                                Experience with Solana with Anchor in some personal learning and experimental projects.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section (Rencfs Focus) -->
+        <section id="projects" class="py-32 px-4 border-t border-zinc-800/50">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-20 section-hidden">
+                    <div>
+                        <h2 class="text-4xl md:text-6xl font-display font-bold mb-2">FEATURED_WORK</h2>
+                        <p class="text-rust font-mono text-sm">/// OPEN_SOURCE_CONTRIBUTIONS</p>
+                    </div>
+                </div>
+
+                <!-- Rencfs Project -->
+                <div class="relative group section-hidden">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-rust to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                    <div class="relative bg-zinc-900 rounded-lg p-8 md:p-12 border border-zinc-800">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div>
+                                <div class="flex items-center gap-4 mb-6">
+                                    <h3 class="text-3xl font-bold font-display">rencfs</h3>
+                                    <span class="px-3 py-1 bg-rust/20 text-rust text-xs rounded-full border border-rust/50">ACTIVE</span>
+                                </div>
+                                <p class="text-zinc-400 mb-6 leading-relaxed">
+                                    Next-generation encrypted filesystem written in Rust. Features Zero-Trust architecture and FUSE implementation for seamless security.
+                                </p>
+                                <ul class="space-y-2 mb-8 text-sm font-mono text-zinc-500">
+                                    <li class="flex items-center gap-2">
+                                        <span class="text-rust">></span> Written in Rust
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <span class="text-rust">></span> Low-level File System access (FUSE)
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <span class="text-rust">></span> Concurrency & Performance focus
+                                    </li>
+                                </ul>
+                                <a href="https://github.com/radumarias/rencfs" target="_blank" class="inline-flex items-center gap-2 text-white border-b border-rust pb-1 hover:text-rust transition-colors">
+                                    GITHUB_REPO <span class="text-xl">↗</span>
+                                </a>
+                            </div>
+                            <div class="bg-black rounded border border-zinc-800 p-6 font-mono text-xs overflow-hidden">
+                                <div class="flex items-center gap-2 mb-4 border-b border-zinc-800 pb-2">
+                                    <div class="w-3 h-3 rounded-full bg-zinc-700"></div>
+                                    <div class="w-3 h-3 rounded-full bg-zinc-700"></div>
+                                    <div class="text-zinc-500 ml-auto">rencfs — cargo</div>
+                                </div>
+                                <div class="space-y-1 text-zinc-300">
+                                    <p>$ <span class="text-yellow-400">cargo</span> build --release</p>
+                                    <p class="text-zinc-500">   Compiling rencfs v0.1.0...</p>
+                                    <p class="text-zinc-500">   Finished release [optimized] target(s) in 3.42s</p>
+                                    <p>$ ./rencfs --mount /mnt/secure</p>
+                                    <p class="text-green-400">[INFO] FS Mounted successfully.</p>
+                                    <p class="text-green-400">[INFO] Encryption keys loaded.</p>
+                                    <p class="animate-pulse">_</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Projects Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+                    <div class="section-hidden bg-zinc-900/50 p-8 border border-zinc-800 hover:border-zinc-600 transition-colors">
+                        <h4 class="text-xl font-bold mb-2">Remote Device Interaction POC</h4>
+                        <p class="text-zinc-500 text-sm mb-4">PoC for remote interaction with multiple devices (PC/Android/etc.) and remote display.</p>
+                        <div class="flex gap-2">
+                            <span class="text-xs bg-zinc-800 px-2 py-1">Rust</span>
+                            <span class="text-xs bg-zinc-800 px-2 py-1">QUIC</span>
+                            <span class="text-xs bg-zinc-800 px-2 py-1">Android</span>
+                        </div>
+                    </div>
+                    <div class="section-hidden bg-zinc-900/50 p-8 border border-zinc-800 hover:border-zinc-600 transition-colors">
+                        <h4 class="text-xl font-bold mb-2">Net-Utils</h4>
+                        <p class="text-zinc-500 text-sm mb-4">High-performance networking utilities for TCP/IP, UDP, SSH, and FTP protocols.</p>
+                        <div class="flex gap-2">
+                            <span class="text-xs bg-zinc-800 px-2 py-1">Java</span>
+                            <span class="text-xs bg-zinc-800 px-2 py-1">Netty</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Dynamic Skills Chart -->
+        <section id="skills" class="py-32 bg-zinc-900/30 border-y border-zinc-900 relative overflow-hidden">
+             <!-- Background Grid Effect -->
+             <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+            <div class="max-w-7xl mx-auto px-4 relative z-10">
+                <div class="lg:flex gap-16">
+                    <div class="lg:w-1/3 mb-12 lg:mb-0 section-hidden">
+                        <h2 class="text-4xl font-display font-bold mb-6">TECH_STACK</h2>
+                        <p class="text-zinc-400 mb-6">
+                            Deep expertise in systems programming and networking protocols.
+                        </p>
+                        <div class="space-y-4 font-mono text-sm">
+                            <div class="p-4 border border-zinc-800 bg-black/50 hover:border-rust transition-colors cursor-help" onmouseenter="showSkillDetails('rust')">
+                                <div class="flex justify-between mb-1">
+                                    <span>RUST</span>
+                                    <span class="text-rust">98%</span>
+                                </div>
+                                <div class="w-full bg-zinc-800 h-1"><div class="bg-rust h-1 w-[98%]"></div></div>
+                            </div>
+                            <div class="p-4 border border-zinc-800 bg-black/50 hover:border-rust transition-colors cursor-help" onmouseenter="showSkillDetails('net')">
+                                <div class="flex justify-between mb-1">
+                                    <span>NETWORKING (TCP/UDP/QUIC)</span>
+                                    <span class="text-rust">95%</span>
+                                </div>
+                                <div class="w-full bg-zinc-800 h-1"><div class="bg-rust h-1 w-[95%]"></div></div>
+                            </div>
+                            <div class="p-4 border border-zinc-800 bg-black/50 hover:border-rust transition-colors cursor-help" onmouseenter="showSkillDetails('java')">
+                                <div class="flex justify-between mb-1">
+                                    <span>JAVA/JVM</span>
+                                    <span class="text-rust">90%</span>
+                                </div>
+                                <div class="w-full bg-zinc-800 h-1"><div class="bg-rust h-1 w-[90%]"></div></div>
+                            </div>
+                            <div class="p-4 border border-zinc-800 bg-black/50 hover:border-rust transition-colors cursor-help" onmouseenter="showSkillDetails('db')">
+                                <div class="flex justify-between mb-1">
+                                    <span>DISTRIBUTED SYSTEMS</span>
+                                    <span class="text-rust">85%</span>
+                                </div>
+                                <div class="w-full bg-zinc-800 h-1"><div class="bg-rust h-1 w-[85%]"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- History/Experience -->
+        <section class="py-32 px-4 max-w-5xl mx-auto">
+            <h2 class="text-4xl font-display font-bold mb-16 text-center">EXECUTION_HISTORY</h2>
+            
+            <div class="relative border-l border-zinc-800 ml-4 md:ml-0 space-y-16 section-hidden">
+                <!-- Current -->
+                <div class="md:grid md:grid-cols-[1fr_50px_1fr] items-start">
+                    <div class="text-right hidden md:block pr-8">
+                        <h3 class="text-xl font-bold text-white">Senior Software Developer</h3>
+                        <p class="text-zinc-500 font-mono text-sm">2018 — Present</p>
+                    </div>
+                    <div class="relative flex items-center justify-center h-full">
+                        <div class="absolute w-4 h-4 rounded-full bg-rust shadow-[0_0_15px_rgba(222,165,132,0.5)]"></div>
+                    </div>
+                    <div class="pl-8 md:pl-8 pt-1 md:pt-0">
+                        <div class="md:hidden mb-2">
+                            <h3 class="text-xl font-bold text-white">Senior Software Developer</h3>
+                            <p class="text-zinc-500 font-mono text-sm">2018 — Present</p>
+                        </div>
+                        <p class="text-zinc-400 text-sm">
+                            Collaborated on diverse projects involving cryptography, digital identity, high-performance encoders, and distributed APIs. Expert-level Rust development for scaling and 3D rendering (WASM/egui).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Backend Lead -->
+                <div class="md:grid md:grid-cols-[1fr_50px_1fr] items-start">
+                    <div class="text-right hidden md:block pr-8">
+                        <h3 class="text-xl font-bold text-white">Backend Lead</h3>
+                        <p class="text-zinc-500 font-mono text-sm">2015 — 2018</p>
+                    </div>
+                    <div class="relative flex items-center justify-center h-full">
+                        <div class="absolute w-4 h-4 rounded-full bg-zinc-700 border border-zinc-500"></div>
+                    </div>
+                    <div class="pl-8 md:pl-8 pt-1 md:pt-0">
+                        <div class="md:hidden mb-2">
+                             <h3 class="text-xl font-bold text-white">Backend Lead</h3>
+                             <p class="text-zinc-500 font-mono text-sm">2015 — 2018</p>
+                        </div>
+                        <p class="text-zinc-400 text-sm">
+                            Developed with Quarkus, ActiveMQ, Elasticsearch. Built Android apps syncing via REST APIs.
+                        </p>
+                    </div>
+                </div>
+                
+                 <!-- Danger -->
+                 <div class="md:grid md:grid-cols-[1fr_50px_1fr] items-start">
+                    <div class="text-right hidden md:block pr-8">
+                        <h3 class="text-xl font-bold text-white">Danger Inc.</h3>
+                        <p class="text-zinc-500 font-mono text-sm">Early Career</p>
+                    </div>
+                    <div class="relative flex items-center justify-center h-full">
+                        <div class="absolute w-4 h-4 rounded-full bg-zinc-700 border border-zinc-500"></div>
+                    </div>
+                    <div class="pl-8 md:pl-8 pt-1 md:pt-0">
+                         <div class="md:hidden mb-2">
+                             <h3 class="text-xl font-bold text-white">Danger Inc.</h3>
+                             <p class="text-zinc-500 font-mono text-sm">Early Career</p>
+                        </div>
+                        <p class="text-zinc-400 text-sm">
+                            Core team member. Contributed to metrics collector for TCP/IP stack in C/C++. Built SSH and FTP clients in Java.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Interactive Terminal -->
+        <section id="terminal" class="py-20 bg-black border-t border-zinc-800">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="bg-[#0f0f0f] rounded-lg border border-zinc-800 shadow-2xl overflow-hidden font-mono text-sm h-[400px] flex flex-col">
+                    <div class="bg-[#1a1a1a] px-4 py-2 flex items-center gap-2 border-b border-zinc-800">
+                        <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                        <div class="ml-4 text-xs text-zinc-500">guest@radu-portfolio:~</div>
+                    </div>
+                    <div id="terminal-output" class="flex-1 p-4 overflow-y-auto text-zinc-300 space-y-2 custom-scrollbar" style="scroll-behavior: smooth;">
+                        <p>Welcome to Radu's interactive terminal.</p>
+                        <p>Type <span class="text-rust">'help'</span> to see available commands.</p>
+                        <br>
+                    </div>
+                    <div class="p-4 bg-[#0f0f0f] border-t border-zinc-800 flex items-center">
+                        <span class="text-neon mr-2">➜</span>
+                        <input type="text" id="terminal-input" class="bg-transparent border-none outline-none text-white w-full font-mono" placeholder="..." autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-12 text-center text-zinc-600 text-xs font-mono">
+            <p>RADU MARIAS © 2026</p>
+            <p class="mt-2 text-rust/50">[ SYSTEM END OF LINE ]</p>
+        </footer>
+
+    </main>
+
+    <script>
+        // --- CUSTOM CURSOR ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // Adding a slight delay to the outline for a fluid feel
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+        
+        // --- CANVAS DOT BACKGROUND ---
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initParticles();
+        }
+        
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.baseX = x;
+                this.baseY = y;
+                this.size = 1.5;
+                this.density = (Math.random() * 20) + 1;
+            }
+            
+            draw() {
+                ctx.fillStyle = '#333';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            update(mouse) {
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx*dx + dy*dy);
+                let maxDistance = mouse.radius;
+                
+                if (distance < maxDistance) {
+                    let force = (maxDistance - distance) / maxDistance;
+                    let directionX = (dx / distance) * force * this.density;
+                    let directionY = (dy / distance) * force * this.density;
+                    
+                    this.x -= directionX * 3;
+                    this.y -= directionY * 3;
+                    ctx.fillStyle = `rgba(222, 165, 132, ${force})`; 
+                } else {
+                    if (this.x !== this.baseX) {
+                        let dx = this.x - this.baseX;
+                        this.x -= dx/15;
+                    }
+                    if (this.y !== this.baseY) {
+                        let dy = this.y - this.baseY;
+                        this.y -= dy/15;
+                    }
+                    ctx.fillStyle = '#1a1a1a';
+                }
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            let spacing = 30; // Dot paper spacing
+            for (let x = 0; x < width; x += spacing) {
+                for (let y = 0; y < height; y += spacing) {
+                    particles.push(new Particle(x, y));
+                }
+            }
+        }
+
+        let mouse = {
+            x: null,
+            y: null,
+            radius: 150
+        };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(mouse);
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animateCanvas();
+
+        // --- GSAP ANIMATIONS ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Intro Sequence - Rust Cargo Build Simulation
+        const tl = gsap.timeline();
+
+        // Disable scroll during loading
+        document.body.style.overflow = 'hidden';
+
+        tl.to("#ascii-art", { opacity: 1, scale: 1, duration: 1.5, ease: "power4.out" })
+          .to("#compile-1", { opacity: 1, duration: 0.3 }, "+=0.2")
+          .to("#compile-2", { opacity: 1, duration: 0.3 }, "+=0.4")
+          .to("#compile-3", { opacity: 1, duration: 0.3 }, "+=0.4")
+          .to("#compile-4", { opacity: 1, duration: 0.3 }, "+=0.4")
+          .to("#compile-5", { opacity: 1, duration: 0.3 }, "+=0.3")
+          .to("#compile-6", { opacity: 1, duration: 0.3 }, "+=0.5")
+          .to("#compile-7", { opacity: 1, duration: 0.4 }, "+=0.3")
+          .to("#intro-layer", { y: "-100%", duration: 1, delay: 0.8, ease: "expo.inOut" }, undefined, () => {
+              // Re-enable scroll after intro completes
+              document.body.style.overflow = 'auto';
+          })
+          .from("h1", { y: 100, opacity: 0, duration: 1 }, "-=0.5")
+          .from("p", { y: 50, opacity: 0, stagger: 0.2, duration: 0.8 }, "-=0.8");
+
+        // Scroll Animations for Sections
+        gsap.utils.toArray('.section-hidden').forEach((elem) => {
+            gsap.to(elem, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: elem,
+                    start: "top 80%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+
+        // --- TERMINAL LOGIC ---
+        const termInput = document.getElementById('terminal-input');
+        const termOutput = document.getElementById('terminal-output');
+        
+        const commands = {
+            'help': 'Available commands: about, projects, skills, contact, rencfs, clear, whoami, social, stats',
+            'about': 'Radu Marias. Senior Rust Developer. Systems Engineer. Expert in networking, cryptography, and distributed systems.',
+            'projects': 'Featured: rencfs (Encrypted FS), Remote Device Interaction PoC, Net-Utils (Java Networking), Solana Anchor Exp.',
+            'rencfs': 'rencfs: Open source encrypted filesystem written in Rust. Features Zero-Trust architecture and FUSE implementation.',
+            'skills': 'Expertise: Rust, Java, C/C++, QUIC, TCP/IP, UDP, SSH, FTP, PostgreSQL, Elasticsearch, Cryptography.',
+            'contact': 'Email: radumarias@gmail.com',
+            'whoami': 'guest_session_initialized',
+            'social': 'GitHub: github.com/radumarias \nTwitter/X: @radumarias',
+            'stats': 'Location: Romania \nRank: One of the most active GitHub users in RO \nPrimary Skill: Rust Systems',
+            'clear': 'CLEAR_ACTION'
+        };
+
+        const easterEggs = {
+            'sudo': 'Access Denied. Security protocol engaged.',
+            'matrix': 'Wake up, Neo... The system has you.',
+            'ls': 'projects/  bio.md  rencfs.log  id_rsa.pub [LOCKED]',
+            'rust': 'Safety. Speed. Concurrency. The ultimate systems language.',
+            'java': 'The backbone of networking. QUIC and Netty specialist.'
+        };
+
+        termInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const input = this.value.toLowerCase().trim();
+                let output = '';
+
+                // Log user command
+                termOutput.innerHTML += `<div><span class="text-neon">➜</span> <span class="text-white">${this.value}</span></div>`;
+
+                if (commands[input]) {
+                    if (commands[input] === 'CLEAR_ACTION') {
+                        termOutput.innerHTML = '';
+                    } else {
+                        output = commands[input].replace(/\n/g, '<br>');
+                        termOutput.innerHTML += `<div class="text-zinc-400 mb-2">${output}</div>`;
+                    }
+                } else if (easterEggs[input]) {
+                     output = easterEggs[input].replace(/\n/g, '<br>');
+                     termOutput.innerHTML += `<div class="text-yellow-500 mb-2">${output}</div>`;
+                } else if (input === '') {
+                    // do nothing
+                } else {
+                    termOutput.innerHTML += `<div class="text-red-400 mb-2">Command not found: ${input}</div>`;
+                }
+
+                this.value = '';
+                // Auto scroll
+                termOutput.scrollTop = termOutput.scrollHeight;
+            }
+        });
+
+        // Skill detail helper
+        function showSkillDetails(skill) {
+            // Optional: add tooltips or log to terminal when hovering skills matrix
+        }
+
+        // --- CONSOLE DETECTIVE: RUST EASTER EGGS ---
+        let consoleOpen = false;
+        let rustJokesTriggered = false;
+
+        // Detect if DevTools console is open
+        const detectConsole = () => {
+            const threshold = 160;
+            const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+            const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+            
+            if (!(heightThreshold && widthThreshold) && ((widthThreshold || heightThreshold))) {
+                if (!consoleOpen) {
+                    consoleOpen = true;
+                    onConsoleOpen();
+                }
+            } else {
+                consoleOpen = false;
+            }
+        };
+
+        function onConsoleOpen() {
+            if (rustJokesTriggered) return;
+            rustJokesTriggered = true;
+
+            console.log('%cHey, you found it!', 'color: #DEA584; font-weight: bold; font-size: 16px;');
+            
+            // Trigger page effects
+            triggerRustPageEffects();
+        }
+
+        // Visual page effects when console is opened
+        function triggerRustPageEffects() {
+            // Pulse the hero section
+            gsap.to('h1', {
+                scale: 1.05,
+                duration: 0.3,
+                yoyo: true,
+                repeat: 1,
+                ease: 'power2.inOut'
+            });
+
+            // Flash rust color border on hero card
+            const heroCard = document.getElementById('hero-card');
+            if (heroCard) {
+                gsap.to(heroCard, {
+                    borderColor: '#DEA584',
+                    duration: 0.5,
+                    yoyo: true,
+                    repeat: 3
+                });
+            }
+
+            // Temporarily boost particle colors
+            setTimeout(() => {
+                particles.forEach(p => {
+                    ctx.fillStyle = 'rgba(222, 165, 132, 0.3)';
+                });
+            }, 500);
+
+            // Add a message to the terminal
+            const terminalOutput = document.getElementById('terminal-output');
+            if (terminalOutput) {
+                terminalOutput.innerHTML += `<div class="text-rust animate-pulse">[SYSTEM] Console snooper detected. Hello, curious developer!</div><br>`;
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            }
+
+            // Start messing with the user
+            messWithUser();
+        }
+
+        // Mess with the user when console is open
+        function messWithUser() {
+            const pranks = [
+                () => {
+                    // Flip text upside down on all paragraphs
+                    document.querySelectorAll('p').forEach(p => {
+                        if (!p.classList.contains('pranked')) {
+                            p.style.transform = 'scaleY(-1)';
+                            p.classList.add('pranked');
+                        }
+                    });
+                },
+                () => {
+                    // Rotate everything slightly
+                    document.body.style.transform = 'rotate(1deg)';
+                },
+                () => {
+                    // Make text blink
+                    document.querySelectorAll('h1, h2, h3').forEach(h => {
+                        h.style.opacity = Math.random() > 0.5 ? '0.5' : '1';
+                    });
+                },
+                () => {
+                    // Glitch hero card
+                    const card = document.getElementById('hero-card');
+                    if (card) {
+                        card.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+                    }
+                },
+                () => {
+                    // Shake the title
+                    const title = document.querySelector('h1');
+                    if (title) {
+                        title.style.transform = `translateX(${Math.random() * 10 - 5}px)`;
+                    }
+                },
+                () => {
+                    // Invert colors momentarily
+                    document.body.style.filter = 'invert(0.05)';
+                },
+                () => {
+                    // Make buttons dance
+                    document.querySelectorAll('a[href*="#"]').forEach(a => {
+                        a.style.transform = `translateY(${Math.sin(Date.now() / 100) * 5}px)`;
+                    });
+                },
+                () => {
+                    // Skew sections
+                    document.querySelectorAll('section').forEach((s, i) => {
+                        s.style.transform = `skew(${(i % 2 === 0 ? 1 : -1) * 0.5}deg)`;
+                    });
+                }
+            ];
+
+            // Execute random pranks
+            const randomPrank = pranks[Math.floor(Math.random() * pranks.length)];
+            randomPrank();
+
+            // Reset after a bit
+            setTimeout(() => {
+                document.body.style.transform = '';
+                document.body.style.filter = '';
+                document.querySelectorAll('[style*="transform"]').forEach(el => {
+                    if (el.id !== 'hero-card' && el.id !== 'terminal-input') {
+                        el.style.transform = '';
+                    }
+                });
+                document.querySelectorAll('.pranked').forEach(p => {
+                    p.style.transform = '';
+                    p.classList.remove('pranked');
+                });
+                document.querySelectorAll('section').forEach(s => {
+                    s.style.transform = '';
+                });
+                document.querySelectorAll('h1').forEach(h => {
+                    h.style.transform = '';
+                });
+            }, 2000);
+        }
+
+        // Check periodically for console
+        setInterval(() => {
+            detectConsole();
+            
+            // Update console state indicator every 1s
+            const stateValue = document.getElementById('state-value');
+            if (stateValue) {
+                if (consoleOpen) {
+                    stateValue.textContent = 'OPEN - nice try';
+                    stateValue.className = 'text-rust';
+                } else {
+                    stateValue.textContent = 'closed';
+                    stateValue.className = 'text-zinc-400';
+                }
+            }
+        }, 1000);
+        detectConsole();
+
+    </script>
+</body>
+</html>
