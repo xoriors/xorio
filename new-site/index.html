@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radu Marias | Rust Systems Engineer</title>
+    <meta name="description" content="Portfolio of Radu Marias - Senior Software Developer, Rust Specialist, and Expert in Networking, APIs, Cryptography and Distributed Systems.">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Radu Marias | Rust Systems Engineer">
+    <meta property="og:description" content="Senior Software Developer & Rust Specialist. Creator of rencfs. Expert in distributed systems and cryptography.">
+    <meta property="og:image" content="https://xorio.rs/og-image.jpg"> 
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Radu Marias | Rust Systems Engineer">
+    <meta name="twitter:description" content="Senior Software Developer & Rust Specialist. Creator of rencfs. Expert in distributed systems and cryptography.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        rust: '#DEA584',
+                        terminal: '#4ADE80',
+                        bgnav: '#1e1e1e',
+                        bgmain: '#0f0f12',
+                        panel: '#18181b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #18181b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 2px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+        .matrix-bg {
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-bgmain text-zinc-300 font-sans custom-scrollbar selection:bg-rust selection:text-black">
+
+    <!-- Navigation / Top Bar -->
+    <nav class="fixed top-0 w-full z-50 bg-bgmain/90 backdrop-blur border-b border-zinc-800 font-mono text-sm">
+        <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-rust">~/radu-marias</span>
+                <span class="text-zinc-600">/</span>
+                <span class="text-terminal">portfolio</span>
+            </div>
+            <div class="hidden md:flex gap-6">
+                <a href="#about" class="hover:text-rust transition-colors">_about</a>
+                <a href="#projects" class="hover:text-rust transition-colors">_projects</a>
+                <a href="#experience" class="hover:text-rust transition-colors">_experience</a>
+                <a href="#skills" class="hover:text-rust transition-colors">_skills</a>
+                <a href="#contact" class="hover:text-rust transition-colors">_contact</a>
+            </div>
+            <a href="mailto:radumarias@gmail.com" class="px-4 py-1.5 border border-zinc-700 rounded hover:bg-zinc-800 hover:border-rust transition-all text-xs">
+                CONTACT_ME
+            </a>
+        </div>
+    </nav>
+
+    <main class="pt-20 pb-20">
+        
+        <!-- Hero Section -->
+        <section class="max-w-7xl mx-auto px-4 py-20 min-h-[80vh] flex flex-col justify-center">
+            <div class="font-mono text-terminal mb-4 tracking-tighter">
+                <span class="mr-2">user:</span><span class="text-white font-bold">root</span>
+                <span class="mx-2">|</span>
+                <span class="mr-2">status:</span><span class="text-terminal blink">active</span>
+            </div>
+            
+            <h1 class="text-6xl md:text-8xl font-black text-white tracking-tight mb-6 font-mono">
+                RADU <br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-rust to-orange-600">MARIAS</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-zinc-400 max-w-2xl mb-12 leading-relaxed">
+                <span class="font-mono text-rust">&gt;</span> Senior Software Developer specializing in <strong class="text-white">Rust</strong>, Distributed Systems, and Low-level Networking.
+            </p>
+
+            <div class="flex flex-wrap gap-4">
+                <a href="#projects" class="group relative px-6 py-3 font-mono font-bold text-white bg-zinc-900 border border-zinc-700 overflow-hidden hover:border-terminal transition-colors">
+                    <span class="absolute inset-0 w-full h-full bg-zinc-800/50 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                    <span class="relative">VIEW_WORK()</span>
+                </a>
+                <a href="https://github.com/xoriors" target="_blank" class="px-6 py-3 font-mono text-zinc-400 border border-transparent hover:text-white transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+                    github.com/xoriors
+                </a>
+            </div>
+
+            <!-- Stats/Badges -->
+            <div class="bg-panel border border-zinc-800 p-6 mt-16 max-w-3xl font-mono text-sm">
+                <div class="text-zinc-500 mb-2"># User Statistics</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     <div>
+                        <span class="text-rust block text-xs">LOCATION</span>
+                        <span class="text-white">Romania</span>
+                    </div>
+                    <div>
+                        <span class="text-rust block text-xs">ACTIVITY</span>
+                        <span class="text-white">Top GitHub Contributor</span>
+                    </div>
+                    <div>
+                        <span class="text-rust block text-xs">FOCUS</span>
+                        <span class="text-white">Systems / Network</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-20 border-t border-zinc-900 bg-zinc-900/30">
+            <div class="max-w-4xl mx-auto px-4">
+                <h2 class="font-mono text-3xl text-white mb-8 border-l-4 border-rust pl-4">about_me</h2>
+                <div class="prose prose-invert prose-lg max-w-none text-zinc-400">
+                    <p class="mb-6">
+                        I am a Rust Developer with extensive experience in concurrency, file systems, networking, distributed systems, containers, APIs, and cryptography.
+                    </p>
+                    <p class="mb-6">
+                        I also have a strong background in Java, focusing on network protocols such as QUIC, TCP/IP, UDP, SSH, and FTP, and I’m proficient in SQL databases, including PostgreSQL and MySQL.
+                    </p>
+                    <p>
+                        One of the most active GitHub users in Romania and among the first in Rust.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Project -->
+        <section id="projects" class="py-20 bg-bgmain">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="font-mono text-3xl text-white mb-2">featured_project</h2>
+                <div class="h-1 w-20 bg-terminal mb-12"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center group">
+                    <!-- Terminal Window Visual -->
+                    <div class="bg-[#1e1e1e] rounded-lg shadow-2xl border border-zinc-800 overflow-hidden font-mono text-sm relative">
+                        <!-- Window Chrome -->
+                        <div class="bg-[#2d2d2d] px-4 py-2 flex items-center gap-2 border-b border-zinc-700">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span class="ml-2 text-zinc-400 text-xs">bash — rencfs</span>
+                        </div>
+                        <!-- Terminal Content -->
+                        <div class="p-6 text-zinc-300 space-y-2 h-[300px] overflow-y-hidden">
+                            <p><span class="text-terminal">user@system:~$</span> cargo install rencfs</p>
+                            <p class="text-zinc-500">Installing rencfs v1.0.0...</p>
+                            <p><span class="text-terminal">user@system:~$</span> rencfs --mount /cloud/dropbox --target /local/secure</p>
+                            <p class="text-zinc-400">[INFO] Initializing encrypted filesystem...</p>
+                            <p class="text-zinc-400">[INFO] Syncing with cloud provider...</p>
+                            <p class="text-zinc-400">[INFO] Mount point established.</p>
+                            <p class="text-zinc-400">[SUCCESS] Directory is now encrypted and synced.</p>
+                            <div class="mt-4 p-2 bg-rust/10 border-l-2 border-rust text-rust">
+                                Encrypted filesystem enabling users to set up encrypted directories to sync with various cloud providers.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="px-2 py-1 bg-rust/20 text-rust text-xs font-mono rounded">OPEN_SOURCE</span>
+                            <span class="px-2 py-1 bg-zinc-800 text-zinc-400 text-xs font-mono rounded">RUST</span>
+                            <span class="px-2 py-1 bg-zinc-800 text-zinc-400 text-xs font-mono rounded">CRYPTO</span>
+                        </div>
+                        <h3 class="text-4xl font-bold text-white mb-4 group-hover:text-rust transition-colors">rencfs</h3>
+                        <p class="text-zinc-400 text-lg mb-6">
+                            I currently lead an active open-source project that creates an encrypted filesystem. This project enables users to set up encrypted directories to sync with various cloud providers, ensuring data privacy and security in untrusted environments.
+                        </p>
+                        
+                        <div class="flex gap-4">
+                            <a href="https://github.com/xoriors/rencfs" class="inline-flex items-center gap-2 text-white font-mono hover:text-terminal underline underline-offset-4 decoration-zinc-700 hover:decoration-terminal transition-all">
+                                <span>VIEW_REPO</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Timeline -->
+        <section id="experience" class="py-20 bg-zinc-900/20 border-t border-zinc-900">
+            <div class="max-w-4xl mx-auto px-4">
+                <h2 class="font-mono text-3xl text-white mb-12 flex items-center gap-3">
+                    <span class="text-rust">fn</span> experience()
+                </h2>
+
+                <div class="space-y-12 border-l border-zinc-800 pl-8 ml-4">
+                    
+                    <!-- Solana -->
+                    <div class="relative">
+                        <div class="absolute -left-[41px] top-1 w-5 h-5 rounded-full bg-bgmain border-2 border-rust"></div>
+                        <h3 class="text-xl font-bold text-white font-mono">Blockchain & Web3</h3>
+                        <div class="text-rust text-sm font-mono mb-2">Experimental Projects</div>
+                        <p class="text-zinc-400">
+                            Experience with <strong class="text-zinc-200">Solana</strong> with Anchor in some personal learning and experimental projects.
+                        </p>
+                    </div>
+
+                     <!-- Past Web/Backend -->
+                     <div class="relative">
+                        <div class="absolute -left-[41px] top-1 w-5 h-5 rounded-full bg-bgmain border-2 border-zinc-700"></div>
+                        <h3 class="text-xl font-bold text-white font-mono">Full Stack & Distributed Systems</h3>
+                        <div class="text-zinc-500 text-sm font-mono mb-2">Various Roles</div>
+                        <p class="text-zinc-400 mb-2">
+                            Developed web applications using GWT and backend technologies like <strong class="text-zinc-200">Quarkus</strong>, <strong class="text-zinc-200">ActiveMQ</strong>, <strong class="text-zinc-200">Elasticsearch</strong>, and <strong class="text-zinc-200">Apache Camel</strong>.
+                        </p>
+                        <p class="text-zinc-400">
+                             Developed Android apps that synchronize data with servers via REST APIs.
+                        </p>
+                    </div>
+
+                    <!-- Danger Inc -->
+                    <div class="relative">
+                        <div class="absolute -left-[41px] top-1 w-5 h-5 rounded-full bg-bgmain border-2 border-zinc-700"></div>
+                        <h3 class="text-xl font-bold text-white font-mono">Mobile Systems Engineering</h3>
+                        <div class="text-zinc-500 text-sm font-mono mb-2">Danger Inc. (Grandfather of Android)</div>
+                        <p class="text-zinc-400">
+                             Built SSH and FTP clients in Java and contributed to a metrics collector for the TCP/IP stack implementation in C/C++ for mobile devices. Part of the core team.
+                        </p>
+                    </div>
+
+                    <!-- Remote Device -->
+                    <div class="relative">
+                        <div class="absolute -left-[41px] top-1 w-5 h-5 rounded-full bg-bgmain border-2 border-zinc-700"></div>
+                        <h3 class="text-xl font-bold text-white font-mono">Remote Interaction PoC</h3>
+                        <div class="text-zinc-500 text-sm font-mono mb-2">Research</div>
+                        <p class="text-zinc-400">
+                             Created a proof of concept for remote device interaction, allowing users to capture mobile screens and send keyboard inputs through a web app similar to a mini-VNC.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Grid -->
+        <section id="skills" class="py-20">
+            <div class="max-w-6xl mx-auto px-4">
+                <h2 class="font-mono text-3xl text-white mb-12 text-center">technical_stack</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Languages -->
+                    <div class="p-6 border border-zinc-800 bg-zinc-900/30 hover:border-rust/50 transition-colors">
+                        <h4 class="font-mono text-rust mb-4 text-sm uppercase tracking-wider">[Languages]</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Rust</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Java</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Kotlin</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Python</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">C/C++</span>
+                        </div>
+                    </div>
+
+                    <!-- Networking -->
+                    <div class="p-6 border border-zinc-800 bg-zinc-900/30 hover:border-terminal/50 transition-colors">
+                        <h4 class="font-mono text-terminal mb-4 text-sm uppercase tracking-wider">[Protocols]</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">QUIC</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">TCP/IP</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">SSH</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">FTP</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">UDP</span>
+                        </div>
+                    </div>
+
+                    <!-- Domain -->
+                    <div class="p-6 border border-zinc-800 bg-zinc-900/30 hover:border-blue-500/50 transition-colors">
+                        <h4 class="font-mono text-blue-400 mb-4 text-sm uppercase tracking-wider">[Domains]</h4>
+                        <ul class="space-y-1 text-sm text-zinc-400 font-mono">
+                            <li>> Cryptography</li>
+                            <li>> Distributed Systems</li>
+                            <li>> Containers</li>
+                            <li>> Digital Identity</li>
+                            <li>> File Systems</li>
+                        </ul>
+                    </div>
+
+                    <!-- Backend Tech -->
+                     <div class="p-6 border border-zinc-800 bg-zinc-900/30 hover:border-purple-500/50 transition-colors">
+                        <h4 class="font-mono text-purple-400 mb-4 text-sm uppercase tracking-wider">[Backend]</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">PostgreSQL</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Quarkus</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Elasticsearch</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Apache Camel</span>
+                        </div>
+                    </div>
+
+                     <!-- Mobile -->
+                     <div class="p-6 border border-zinc-800 bg-zinc-900/30 hover:border-pink-500/50 transition-colors">
+                        <h4 class="font-mono text-pink-400 mb-4 text-sm uppercase tracking-wider">[Mobile]</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Android</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">GWT</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Embedded</span>
+                        </div>
+                    </div>
+
+                    <!-- Other -->
+                    <div class="p-6 border border-zinc-800 bg-zinc-900/30 hover:border-zinc-500/50 transition-colors">
+                        <h4 class="font-mono text-zinc-500 mb-4 text-sm uppercase tracking-wider">[Misc]</h4>
+                         <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">WASM</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">egui</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">Solana</span>
+                            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded text-sm font-mono">3D Rendering</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA / Footer -->
+        <footer id="contact" class="py-20 border-t border-zinc-800 text-center">
+            <div class="max-w-2xl mx-auto px-4">
+                <h2 class="text-3xl font-bold text-white mb-6 font-mono">Ready to <span class="text-rust">connect</span>?</h2>
+                <p class="text-zinc-400 mb-8">
+                    Senior Software Developer | Rust Specialist | Expert in Networking, APIs, Cryptography and Distributed Systems
+                </p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                    <a href="mailto:radumarias@gmail.com" class="px-8 py-4 bg-white text-black font-bold hover:bg-zinc-200 transition-colors font-mono">
+                        radumarias@gmail.com
+                    </a>
+                    <a href="https://xorio.rs" target="_blank" class="px-8 py-4 bg-transparent border border-zinc-700 text-white font-bold hover:border-rust hover:text-rust transition-colors font-mono">
+                         Visit xorio.rs
+                    </a>
+                </div>
+                <div class="mt-20 text-zinc-600 text-sm font-mono">
+                    <p>&copy; 2026 Radu Marias. All systems operational.</p>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // Simple console greeting
+        console.log("%cHello World! Looking for clean code?", "color: #DEA584; font-size: 20px; font-weight: bold;");
+        console.log("Check out my GitHub: https://github.com/xoriors");
+
+        // Smooth scroll implementation just in case
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
